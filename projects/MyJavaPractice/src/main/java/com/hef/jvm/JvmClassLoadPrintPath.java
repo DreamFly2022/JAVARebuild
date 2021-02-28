@@ -1,7 +1,6 @@
 package com.hef.jvm;
 
-//import sun.misc.Launcher;
-//import sun.misc.URLClassPath;
+import sun.misc.Launcher;
 
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -20,11 +19,11 @@ public class JvmClassLoadPrintPath {
      */
     public static void main(String[] args) {
         // 启动类加载器
-//        URL[] urLs = Launcher.getBootstrapClassPath().getURLs();
-//        System.out.println("启动类加载器");
-//        for (URL urL : urLs) {
-//            System.out.println(" ==> " + urL.toExternalForm());
-//        }
+        URL[] urLs = Launcher.getBootstrapClassPath().getURLs();
+        System.out.println("启动类加载器");
+        for (URL urL : urLs) {
+            System.out.println(" ==> " + urL.toExternalForm());
+        }
 
         // 拓展类加载器
         ClassLoader extClassLoader = JvmClassLoadPrintPath.class.getClassLoader().getParent();

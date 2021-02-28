@@ -25,16 +25,18 @@ public class HttpServer01 {
     }
 
     private static void service(Socket socket){
-        try {
+        try (OutputStream outputStream = socket.getOutputStream();
+              PrintWriter printWriter = new PrintWriter(outputStream, true)){
+            String contentStr="hello,nio\r\n";
             Thread.sleep(20);
-            OutputStream outputStream = socket.getOutputStream();
-            PrintWriter printWriter = new PrintWriter(outputStream);
             printWriter.println("HTTP/1.1 200 OK");
-            printWriter.println("Content-Type:text/html;charset=utf-8");
+            printWriter.println("Accept-Ranges: bytes");
+            printWriter.println("Cache-Control: private, no-cache, no-store, proxy-revalidate, no-transform");
+            printWriter.println("Connection: keep-alive");
+            printWriter.println("Content-length:"+contentStr.length());
+            printWriter.println("Content-Type: text/html;charset=utf-8");
             printWriter.println();
-            printWriter.write("hello,nio");
-            printWriter.close();
-            socket.close();
+            printWriter.write(contentStr);
         } catch (InterruptedException | IOException e) {
             throw new RuntimeException(e);
         }
