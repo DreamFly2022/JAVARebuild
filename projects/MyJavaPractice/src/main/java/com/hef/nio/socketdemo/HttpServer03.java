@@ -5,29 +5,33 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
- *
  * @author lifei
- * @since 2021/2/26
+ * @since 2021/3/4
  */
-public class HttpServer01 {
+public class HttpServer03 {
 
     public static void main(String[] args) {
+        ExecutorService executorService = Executors.newFixedThreadPool(37);
         try {
-            ServerSocket serverSocket = new ServerSocket(8801);
-            while (true) {
+            ServerSocket serverSocket = new ServerSocket(8803);
+            while (true){
                 Socket socket = serverSocket.accept();
-                service(socket);
+                executorService.execute(()->{service(socket);});
             }
         } catch (IOException e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
     private static void service(Socket socket){
         try (OutputStream outputStream = socket.getOutputStream();
-              PrintWriter printWriter = new PrintWriter(outputStream, true)){
+             PrintWriter printWriter = new PrintWriter(outputStream, true)){
             String contentStr="hello,nio\r\n";
             Thread.sleep(20);
             printWriter.println("HTTP/1.1 200 OK");
