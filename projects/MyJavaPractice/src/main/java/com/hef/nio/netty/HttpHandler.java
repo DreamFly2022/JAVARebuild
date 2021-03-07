@@ -58,6 +58,7 @@ public class HttpHandler extends ChannelInboundHandlerAdapter {
                     ctx.write(response);
                 }
             }
+            ctx.flush();
         }
     }
 
