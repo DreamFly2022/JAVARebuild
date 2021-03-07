@@ -43,7 +43,20 @@ public class HttpClient01 {
         } catch (IOException e) {
             e.printStackTrace();
         }finally {
-
+            if (httpclient!=null){
+                try {
+                    httpclient.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (response!=null){
+                try {
+                    response.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
