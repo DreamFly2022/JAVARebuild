@@ -24,7 +24,7 @@ public class LockSupportDemo {
                 if (Thread.currentThread().isInterrupted()) {
                     System.out.println("被中断了");
                 }
-                System.out.println("继续执行");
+                System.out.println(Thread.currentThread().getName()+"继续执行");
             }
         }
     }
@@ -34,6 +34,7 @@ public class LockSupportDemo {
         Thread.sleep(1000L);
         t2.start();
         Thread.sleep(3000L);
+        // interrupt 也能够让被ThreadSupport.park()的线程释放锁
         t1.interrupt();
         LockSupport.unpark(t2);
         t1.join();
