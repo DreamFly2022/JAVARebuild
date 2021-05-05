@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+
+    <bean id="student01" class="com.hef.spring01.Student">
+        <property name="id" value="23"/>
+        <property name="name" value="xiaoMing"/>
+    </bean>
+    <bean id="student02" class="com.hef.spring01.Student">
+        <property name="id" value="21"/>
+        <property name="name" value="xiaoTian"/>
+    </bean>
+
+    <bean id="klass" class="com.hef.spring01.Klass">
+        <property name="students">
+            <list>
+                <ref bean="student01"/>
+                <ref bean="student02"/>
+                <bean class="com.hef.spring01.Student">
+                    <property name="id" value="11"/>
+                    <property name="name" value="aa"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="klass02" class="com.hef.aop.Klass02">
+        <property name="students">
+            <list>
+                <ref bean="student01"/>
+                <ref bean="student02"/>
+                <bean class="com.hef.spring01.Student">
+                    <property name="id" value="11"/>
+                    <property name="name" value="aa"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="school" class="com.hef.aop.School"/>
+
+<!--    扫描注解-->
+    <context:component-scan base-package="com.hef.aop"/>
+
+<!--    AOP的第一种实现方式： XML配置 -->
+<!--    增强的方法实现-->
+    <bean id="aop1" class="com.hef.aop.Aop1"/>
+<!--    切面-->
+    <aop:config>
+        <aop:pointcut id="p1" expression="execution(* com.hef.aop.Klass02.*(..))" /> <!-- 切点 -->
+        <aop:aspect ref="aop1"> <!-- 增强 -->
+<!--            环绕通知-->
+            <aop:around method="runAroundTest" pointcut-ref="p1"/>
+            <aop:after method="afterTest" pointcut-ref="p1"/>
+            <aop:after-returning method="afterReturningTest" pointcut-ref="p1"/>
+            <aop:before method="beforeTest" pointcut-ref="p1"/>
+<!--            <aop:after method=""-->
+        </aop:aspect>
+    </aop:config>
+
+<!--    AOP的第二种实现方式： 注解方式 -->
+    <bean id="aop2" class="com.hef.aop.Aop2"/>
+<!--    <aop:aspectj-autoproxy/>-->
+<!--    哪怕是接口的类也使用CGLib增强 -->
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+
+</beans>
