@@ -3,6 +3,8 @@ package com.hef.java8;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
+import java.util.Arrays;
+
 /**
  * @Date 2021/5/9
  * @Author lifei
@@ -20,7 +22,9 @@ public class GuavaDemo {
     }
 
     public static void main(String[] args) {
-
+        int[] a = new int[10];
+        int n = a.length;
+        Arrays.copyOfRange(a, 0, n);
         eventBus.post(new AEvent());
 
     }
