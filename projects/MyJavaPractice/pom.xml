@@ -61,6 +61,22 @@
             <artifactId>guava</artifactId>
             <version>29.0-jre</version>
         </dependency>
+
+<!--        2021-07-24 测试mysql 时配置 -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.47</version>
+        </dependency>
+
+<!--        2021-07-25 演示PostgreSQL -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.23</version>
+        </dependency>
+
+
     </dependencies>
 
 
