@@ -33,7 +33,7 @@
 
 ## 三、SQL优化和MySQL
 
-
+[SQL和性能优化（一）](https://gitee.com/lf-ren/JavaRebuild/blob/main/Week_06_SQL/2021-11-06-SQL%E5%92%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96.md)
 
 
 
