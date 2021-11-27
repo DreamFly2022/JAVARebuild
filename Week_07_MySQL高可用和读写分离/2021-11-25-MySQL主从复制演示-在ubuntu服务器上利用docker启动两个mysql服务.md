@@ -198,6 +198,8 @@ show slave status\G
 START SLAVE;
 ```
 
+`START SLAVE`之后开启了两个线程：`Slave_IO_Running: Yes`和`Slave_SQL_Running: Yes`
+
 ### (3) 在主库mysql-1上操作
 
 ```
