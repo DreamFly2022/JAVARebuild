@@ -31,9 +31,9 @@ datadir = ./data
 port = 3316
 server_id = 2
 
-sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES 
-log_bin=mysql-bin
-binlog-format=Row
+sql_mode = NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES 
+log_bin = mysql-bin
+binlog-format = Row
 ```
 
 
@@ -84,9 +84,11 @@ CHANGE MASTER TO
     MASTER_USER='repl',      
     MASTER_PASSWORD='123456',   
     MASTER_LOG_FILE='mysql-bin.000003',
-    MASTER_LOG_POS=305;
+    MASTER_LOG_POS=1391;
     
     //MASTER_AUTO_POSITION = 1;
+# 启动复制
+START SLAVE;
 ```
 
 创建数据库：create schema db;
