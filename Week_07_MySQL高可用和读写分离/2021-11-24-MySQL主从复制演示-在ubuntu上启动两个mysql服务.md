@@ -107,11 +107,11 @@ binlog-format=Row
 ```
 # 启动第一个mysql服务
 cd /usr/local/mysql-1/bin
-./mysqld --defaults-file=/usr/local/mysql-1/my.cnf --user=mysql
+./mysqld --defaults-file=/usr/local/mysql-1/my.cnf --user=mysql &
 
 # 启动第二个mysql服务
 cd /usr/local/mysql-2/bin
-./mysqld --defaults-file=/usr/local/mysql-2/my.cnf --user=mysql
+./mysqld --defaults-file=/usr/local/mysql-2/my.cnf --user=mysql &
 ```
 
 ### （2）第二步，测试连接mysql，需要配置socket
