@@ -39,6 +39,5 @@ public class MySimpleKafkaProducer {
             producer.send(record);
         }
         producer.close();
-
     }
 }

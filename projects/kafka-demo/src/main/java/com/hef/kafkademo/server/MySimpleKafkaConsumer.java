@@ -35,7 +35,6 @@ public class MySimpleKafkaConsumer {
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
         consumer.subscribe(Arrays.asList(topic));
         while (true) {
-            System.out.println("===============================================");
             ConsumerRecords<String, String> poll = consumer.poll(Duration.ofMillis(1000));
             poll.forEach(item->{
                 ConsumerRecord<String, String> record = (ConsumerRecord) item;
@@ -47,9 +46,6 @@ public class MySimpleKafkaConsumer {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println("==================================================");
         }
-
-
     }
 }
