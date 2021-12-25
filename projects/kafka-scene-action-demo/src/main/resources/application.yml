@@ -1,0 +1,11 @@
+spring:
+  main:
+    banner-mode: off
+server:
+  port: 8012
+
+
+mydata:
+  kafka:
+    producer-topic: kafka-scene-hw
+    servers: localhost:9001,localhost:9002,localhost:9003
