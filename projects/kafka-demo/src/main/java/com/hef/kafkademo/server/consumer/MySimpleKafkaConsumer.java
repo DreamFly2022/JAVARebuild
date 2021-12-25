@@ -1,7 +1,8 @@
-package com.hef.kafkademo.server;
+package com.hef.kafkademo.server.consumer;
 
 import com.alibaba.fastjson.JSON;
 import com.hef.kafkademo.bean.Order;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -29,6 +30,8 @@ public class MySimpleKafkaConsumer {
         props.setProperty("bootstrap.servers", "localhost:9001,localhost:9002,localhost:9003");
         // kafka group id 的配置
         props.setProperty("group.id", "group1");
+        // 从头开始消费数据
+        props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         String topic = "test32";
         //  构建一个Consumer
