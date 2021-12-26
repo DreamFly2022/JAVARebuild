@@ -93,6 +93,9 @@ create database ds_shop;
 -- 查看表的列表
 \d
 
+-- 查看表结构
+\d t_user
+
 -- 创建表
 CREATE TABLE t_user (
   u_id         serial  NOT NULL PRIMARY KEY,
