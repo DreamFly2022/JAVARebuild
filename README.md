@@ -13,6 +13,7 @@
 ## 五、系统性能优化
 
 - [进阶实战-SQL和性能优化（一）](https://github.com/hefrankeleyn/JAVARebuild/blob/main/Week_06_SQL%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/2021-12-26-%E8%BF%9B%E9%98%B6%E5%AE%9E%E6%88%98-SQL%E5%92%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%EF%BC%88%E4%B8%80%EF%BC%89.md)
+- [进阶实战-SQL和性能优化（二）](https://github.com/hefrankeleyn/JAVARebuild/blob/main/Week_06_SQL%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/2021-12-27-%E8%BF%9B%E9%98%B6%E5%AE%9E%E6%88%98-SQL%E5%92%8C%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%EF%BC%88%E4%BA%8C%EF%BC%89.md)
 
 ## 六、高可用和读写分离、分库分表、分布式事务
 
