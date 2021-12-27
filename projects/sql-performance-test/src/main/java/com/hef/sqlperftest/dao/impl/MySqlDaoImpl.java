@@ -1,4 +1,6 @@
-package com.hef.sqlperftest.dao;
+package com.hef.sqlperftest.dao.impl;
+
+import com.hef.sqlperftest.dao.MySqlDao;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -10,7 +12,7 @@ import java.util.UUID;
  * @Date 2021/12/26
  * @Author lifei
  */
-public class MySqlDaoImpl implements MySqlDao{
+public class MySqlDaoImpl implements MySqlDao {
 
     private static final String URL = "jdbc:mysql://127.0.0.1:3307/ds_shop?useUnicode=true&characterEncoding=utf8&useSSL=true";
     private static final String USER_NAME = "root";
@@ -44,6 +46,11 @@ public class MySqlDaoImpl implements MySqlDao{
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void testSelectSql() {
+
     }
 
     @Override

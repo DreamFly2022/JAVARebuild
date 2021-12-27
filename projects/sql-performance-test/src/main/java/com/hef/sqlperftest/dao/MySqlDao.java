@@ -8,4 +8,6 @@ public interface MySqlDao {
      * 创建批量插入的SQL
      */
     void createBatchInsertSql();
+
+    void testSelectSql();
 }
