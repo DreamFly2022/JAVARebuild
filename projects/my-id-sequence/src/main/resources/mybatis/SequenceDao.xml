@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hef.myidsequence.dao.SequenceDao">
+
+    <resultMap id="rm_SequenceBO" type="com.hef.myidsequence.domain.SequenceBO">
+        <result column="bus_key" property="busKey"/>
+        <result column="id_value" property="beginId"/>
+        <result column="step" property="step"/>
+    </resultMap>
+
+    <select id="findSequenceBO" resultMap="rm_SequenceBO">
+        select bus_key, id_value, step from common.t_sequence where bus_key=#{busKey}
+    </select>
+
+    <update id="updateSequenceBO" parameterType="com.hef.myidsequence.domain.SequenceBO">
+        update common.t_sequence set id_value=#{beginId} where bus_key=#{busKey}
+    </update>
+
+</mapper>

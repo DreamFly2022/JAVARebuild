@@ -1,0 +1,16 @@
+server:
+  port: 8180
+spring:
+  main:
+    banner-mode: off
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://127.0.0.1:3307/common?useUnicode=true&characterEncoding=utf8&useSSL=false
+    username: root
+    password: root
+
+
+
+mybatis:
+  mapper-locations: classpath:/mybatis/**/*.xml
