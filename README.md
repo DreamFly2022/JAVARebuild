@@ -18,8 +18,8 @@
 ## 六、高可用和读写分离、分库分表、分布式事务
 
 - [进阶实战-MySQL读写分离和高可用](https://github.com/hefrankeleyn/JAVARebuild/blob/main/Week_07_MySQL%E9%AB%98%E5%8F%AF%E7%94%A8%E5%92%8C%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB/2022-01-11-%E8%BF%9B%E9%98%B6%E5%AE%9E%E6%88%98-MySQL%E7%9A%84%E9%AB%98%E5%8F%AF%E7%94%A8%E5%92%8C%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB.md)
-- [进阶实战-MySQL分库分表]()
-- [进阶实战-MySQL分布式事务]()
+- [进阶实战-MySQL分库分表](https://github.com/hefrankeleyn/JAVARebuild/blob/main/Week_08_MySQL%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8-%E8%BF%81%E7%A7%BB-%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/2022-01-11-%E8%BF%9B%E9%98%B6%E5%AE%9E%E6%88%98-MySQL%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8.md)
+- [进阶实战-MySQL分布式事务](https://github.com/hefrankeleyn/JAVARebuild/blob/main/Week_08_MySQL%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8-%E8%BF%81%E7%A7%BB-%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/2022-01-12-%E8%BF%9B%E9%98%B6%E5%AE%9E%E6%88%98-MySQL%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1.md)
 
 ## 七、分布式服务
 
