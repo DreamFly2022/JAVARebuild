@@ -1,0 +1,11 @@
+server:
+  port: 8183
+spring:
+  main:
+    banner-mode: off
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3307/ds_shop?useUnicode=true&characterEncoding=utf8&useSSL=false
+    username: root
+    password: root
+mybatis:
+  mapper-locations: classpath:mybatis/**/*.xml
