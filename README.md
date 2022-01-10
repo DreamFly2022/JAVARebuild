@@ -17,6 +17,10 @@
 
 ## 六、高可用和读写分离、分库分表、分布式事务
 
+- [进阶实战-MySQL读写分离和高可用](https://github.com/hefrankeleyn/JAVARebuild/blob/main/Week_07_MySQL%E9%AB%98%E5%8F%AF%E7%94%A8%E5%92%8C%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB/2022-01-11-%E8%BF%9B%E9%98%B6%E5%AE%9E%E6%88%98-MySQL%E7%9A%84%E9%AB%98%E5%8F%AF%E7%94%A8%E5%92%8C%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB.md)
+- [进阶实战-MySQL分库分表]()
+- [进阶实战-MySQL分布式事务]()
+
 ## 七、分布式服务
 
 ## 八、分布式缓存
