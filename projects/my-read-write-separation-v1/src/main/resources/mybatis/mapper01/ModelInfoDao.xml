@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hef.myreadwriteseparationv1.dao.dao01.ModelInfoWriteDao">
+
+    <update id="updateModelInfo" parameterType="com.hef.myreadwriteseparationv1.domain.ModelInfo">
+        update performance.t_model_info
+        set model_type=#{modelType},
+            model_name=#{modelName},
+            model_status=#{modelStatus}
+        where m_id=#{mid}
+    </update>
+
+    <insert id="saveModelInfo" parameterType="com.hef.myreadwriteseparationv1.domain.ModelInfo">
+        insert into performance.t_model_info(model_type,model_name,model_status)
+        values (#{modelType},#{modelName},#{modelStatus})
+    </insert>
+</mapper>
