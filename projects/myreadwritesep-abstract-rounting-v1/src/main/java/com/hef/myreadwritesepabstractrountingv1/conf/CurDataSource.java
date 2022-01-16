@@ -6,7 +6,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface CurDataSource {
-
     String name() default "";
-
 }

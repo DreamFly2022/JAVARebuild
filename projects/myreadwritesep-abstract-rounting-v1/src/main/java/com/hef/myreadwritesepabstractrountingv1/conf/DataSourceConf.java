@@ -36,6 +36,13 @@ public class DataSourceConf {
         return DruidDataSourceBuilder.create().build();
     }
 
+    /**
+     * 动态切换的数据源
+     * @param dataSourceWrite
+     * @param dataSourceRead01
+     * @param dataSourceRead02
+     * @return
+     */
     @Bean
     public DynamicDataSource dynamicDataSource(@Qualifier("dataSourceWrite") DataSource dataSourceWrite,
                                                @Qualifier("dataSourceRead01") DataSource dataSourceRead01,
@@ -46,6 +53,4 @@ public class DataSourceConf {
         DynamicDataSource dynamicDataSource = new DynamicDataSource(dataSourceWrite, targetDataSourceMap);
         return dynamicDataSource;
     }
-
-
 }

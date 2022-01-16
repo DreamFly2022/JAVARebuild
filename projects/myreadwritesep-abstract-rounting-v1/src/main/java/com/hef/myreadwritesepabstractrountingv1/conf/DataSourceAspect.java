@@ -24,11 +24,19 @@ public class DataSourceAspect {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSourceAspect.class);
 
 
+    /**
+     * 切点
+     */
     @Pointcut("@annotation(com.hef.myreadwritesepabstractrountingv1.conf.CurDataSource)")
     public void dataSourcePointCut() {
-
     }
 
+    /**
+     * 增强
+     * @param point
+     * @return
+     * @throws Throwable
+     */
     @Around("dataSourcePointCut()")
     public Object around(ProceedingJoinPoint point) throws Throwable {
         MethodSignature methodSignature = (MethodSignature) point.getSignature();
@@ -46,6 +54,5 @@ public class DataSourceAspect {
         } finally {
             DynamicDataSource.clearDataSource();
         }
-
     }
 }

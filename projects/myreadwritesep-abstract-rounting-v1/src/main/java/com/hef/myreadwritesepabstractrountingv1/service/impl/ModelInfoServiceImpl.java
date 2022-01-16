@@ -21,7 +21,7 @@ import java.util.List;
 public class ModelInfoServiceImpl implements ModelInfoService {
 
 
-    @Resource(name = "modelInfoDao")
+    @Resource
     private ModelInfoDao modelInfoDao;
 
     @CurDataSource(name = DataSourceKey.READ01_KEY)

@@ -1,6 +1,8 @@
 package com.hef.myreadwritesepabstractrountingv1.conf;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
 import javax.sql.DataSource;
@@ -11,6 +13,8 @@ import java.util.Map;
  * @Author lifei
  */
 public class DynamicDataSource extends AbstractRoutingDataSource {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DynamicDataSource.class);
 
     /**
      * ThreadLocal 用于提供线程局部变量，在多线程环境可以保证各个线程里的变量独立于其它线程里的变量。
@@ -24,10 +28,15 @@ public class DynamicDataSource extends AbstractRoutingDataSource {
         super.afterPropertiesSet();
     }
 
-
+    /**
+     * 根据规则选择当前当前的数据源
+     * @return
+     */
     @Override
     protected Object determineCurrentLookupKey() {
-        return getDataSourceKey();
+        String dataSourceKey = getDataSourceKey();
+        LOGGER.info("当前的dataSourceKey为： " + dataSourceKey);
+        return dataSourceKey;
     }
 
     public static void setDataSource(String dataSourceKey) {
