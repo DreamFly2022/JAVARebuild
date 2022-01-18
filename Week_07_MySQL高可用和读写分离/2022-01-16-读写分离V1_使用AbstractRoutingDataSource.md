@@ -6,7 +6,7 @@
 
 根据定义的规则选择对应的数据源
 
-完整的代码：[]()
+完整的代码：[myreadwritesep-abstract-rounting-v1](https://github.com/hefrankeleyn/JAVARebuild/tree/main/projects/myreadwritesep-abstract-rounting-v1)
 
 ## 二、pom依赖
 

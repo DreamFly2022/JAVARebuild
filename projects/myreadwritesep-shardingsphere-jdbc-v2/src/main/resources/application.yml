@@ -1,0 +1,20 @@
+server:
+  port: 8099
+spring:
+  main:
+    banner-mode: off
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      write:
+        url: jdbc:mysql://127.0.0.1:3316/performance?useUnicode=true&characterEncoding=utf8&useSSL=false
+        username: performance
+        password: performance^pw
+      read01:
+        url: jdbc:mysql://127.0.0.1:3326/performance?useUnicode=true&characterEncoding=utf8&useSSL=false
+        username: performance
+        password: performance^pw
+      read02:
+        url: jdbc:mysql://127.0.0.1:3336/performance?useUnicode=true&characterEncoding=utf8&useSSL=false
+        username: performance
+        password: performance^pw
