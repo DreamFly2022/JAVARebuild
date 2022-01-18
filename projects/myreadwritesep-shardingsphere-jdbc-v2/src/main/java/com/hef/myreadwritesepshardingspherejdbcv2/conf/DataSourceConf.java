@@ -77,8 +77,8 @@ public class DataSourceConf {
     private Map<String, DataSource> createDataSource() {
         Map<String, DataSource> result = new HashMap<>(3, 1);
         result.put(writeDataSourceName, dataSourceWrite());
-        result.put(writeDataSourceName, dataSourceRead01());
-        result.put(writeDataSourceName, dataSourceRead02());
+        result.put(readDs1, dataSourceRead01());
+        result.put(readDs2, dataSourceRead02());
         return result;
     }
 

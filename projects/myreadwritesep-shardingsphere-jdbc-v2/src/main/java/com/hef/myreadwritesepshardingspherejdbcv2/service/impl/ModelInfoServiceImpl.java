@@ -40,4 +40,9 @@ public class ModelInfoServiceImpl implements ModelInfoService {
         return modelInfo.clone();
     }
 
+    @Override
+    public List<String> showDataBases() {
+        return modelInfoDao.showDataBases();
+    }
+
 }

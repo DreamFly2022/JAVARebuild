@@ -11,11 +11,15 @@
     </resultMap>
 
     <select id="findModelInfoByModelType" resultMap="rm_ModelInfo">
-        select m_id,model_type,model_name,model_status from performance.t_model_info
+        select m_id,model_type,model_name,model_status from t_model_info
         where model_type=#{modelType}
     </select>
 
     <select id="findModelInfoList" resultMap="rm_ModelInfo">
-        select m_id,model_type,model_name,model_status from performance.t_model_info
+        select m_id,model_type,model_name,model_status from t_model_info
+    </select>
+
+    <select id="showDataBases" resultType="String">
+        show databases;
     </select>
 </mapper>

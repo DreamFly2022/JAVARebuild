@@ -27,8 +27,11 @@ public class ModelInfoServiceTest {
 
     @Test
     public void findModelInfoTest() {
+        List<String> res = modelInfoService.showDataBases();
+        System.out.println(res);
         List<ModelInfo> modelInfoList = modelInfoService.findModelInfoList();
         System.out.println(modelInfoList);
+
     }
 
     @Test

@@ -10,4 +10,6 @@ public interface ModelInfoService {
     List<ModelInfo> findModelInfoList();
 
     ModelInfo findModelInfoByModelType(String modelType);
+
+    List<String> showDataBases();
 }

@@ -11,4 +11,6 @@ public interface ModelInfoDao {
     List<ModelInfo> findModelInfoList();
 
     ModelInfo findModelInfoByModelType(@Param("modelType") String modelType);
+
+    List<String> showDataBases();
 }
