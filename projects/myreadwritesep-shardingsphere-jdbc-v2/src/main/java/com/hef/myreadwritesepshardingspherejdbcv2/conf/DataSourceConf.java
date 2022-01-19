@@ -6,7 +6,6 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +30,7 @@ public class DataSourceConf {
 
     private static final String loadBalancerName = "demo_weight_lb";
 
-    private static final String shardingShpereAlgorithmType = "WEIGHT";
+    private static final String WEIGHT_ALGORITHM_TYPE = "WEIGHT";
 
     private static final String PRO_SQL_SHOW = "sql-show";
 
@@ -43,6 +42,7 @@ public class DataSourceConf {
      */
     @Bean
     public DataSource dataSource() throws SQLException {
+        // 读写分离数据库的路由配置
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfiguration =
                 new ReadwriteSplittingDataSourceRuleConfiguration(readWriteSplittingName, writeDataSourceName,
                         writeDataSourceName, getReadDataSourceNames(), loadBalancerName);
@@ -51,7 +51,7 @@ public class DataSourceConf {
         props.put(readDs1, "2");
         props.put(readDs2, "1");
         ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfiguration =
-                new ShardingSphereAlgorithmConfiguration(shardingShpereAlgorithmType, props);
+                new ShardingSphereAlgorithmConfiguration(WEIGHT_ALGORITHM_TYPE, props);
         // 配置路由规则
         Map<String, ShardingSphereAlgorithmConfiguration> shardingSphereAlgorithmConfigurationMap = new HashMap<>();
         shardingSphereAlgorithmConfigurationMap.put(loadBalancerName, shardingSphereAlgorithmConfiguration);

@@ -31,7 +31,6 @@ public class ModelInfoServiceTest {
         System.out.println(res);
         List<ModelInfo> modelInfoList = modelInfoService.findModelInfoList();
         System.out.println(modelInfoList);
-
     }
 
     @Test
