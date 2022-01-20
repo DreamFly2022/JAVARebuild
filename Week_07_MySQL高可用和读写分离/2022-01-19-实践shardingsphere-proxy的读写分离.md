@@ -16,7 +16,7 @@ shardingsphere-proxy是一个中间件，可直接当做 MySQL/PostgreSQL 使用
 
 参考：[规则配置](https://shardingsphere.apache.org/document/current/cn/quick-start/shardingsphere-proxy-quick-start/#%E8%A7%84%E5%88%99%E9%85%8D%E7%BD%AE)
 
-因为后端使用mysql，所以需要下载[mysql-connector-java-5.1.47.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar) 驱动放到`%SHARDINGSPHERE_PROXY_HOME%/ext-lib` 目录目录。
+因为后端使用mysql，所以需要下载[mysql-connector-java-5.1.47.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar) 驱动放到`%SHARDINGSPHERE_PROXY_HOME%/lib` 目录目录。
 
 > %SHARDINGSPHERE_PROXY_HOME% 为 Proxy 解压后的路径，例：/opt/shardingsphere-proxy-bin/
 
