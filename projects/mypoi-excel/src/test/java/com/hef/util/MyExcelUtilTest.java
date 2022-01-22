@@ -13,6 +13,9 @@ import java.util.List;
  */
 public class MyExcelUtilTest {
 
+    /**
+     * 将数据内容写入excel文件
+     */
     @Test
     public void createNewExcelWriteContentTest() {
         String excelFilePath = "/Users/lifei/Documents/opt/doc/demo01.xlsx";

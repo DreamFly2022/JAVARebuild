@@ -33,8 +33,8 @@ public class MyExcelUtil {
 
     /**
      * 创建一个新的excel， 并向里面写入内容
-     * @param excelContent
-     * @param excelFilePath
+     * @param excelContent excel 的内容
+     * @param excelFilePath excel文件路径，excel文件所在的文件夹路径必须存在。如果文件已经存在会被删除后重建。
      */
     public static void createNewExcelWriteContent(ExcelContent excelContent, String excelFilePath) {
         try {
