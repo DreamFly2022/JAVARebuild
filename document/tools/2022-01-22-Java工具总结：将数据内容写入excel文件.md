@@ -136,5 +136,5 @@ Java项目开发中，经常会遇到这样的需求：将数据内容写入exce
 
 ## 五、更多实用的工具类
 
-作者会不断总结出更多实用的Java开发工具类，可以在这里看到：[Java开发中总结的非常实用的工具代码](https://github.com/hefrankeleyn/JAVARebuild/blob/main/document/2022-01-22-Java开发中总结的非常实用的工具代码.md)。
+作者会不断总结出更多实用的Java开发工具类，可以在这里看到：[Java开发中总结的非常实用的工具代码](https://blog.csdn.net/hefrankeleyn/article/details/122646166)。
 
