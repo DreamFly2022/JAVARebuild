@@ -9,7 +9,11 @@ import java.util.List;
  */
 public class ExcelContent {
 
+    /**
+     * 多个sheet页的内容
+     */
     private List<ExcelSheetContent> sheetContentList = new ArrayList<>();
+
 
     public List<ExcelSheetContent> getSheetContentList() {
         return sheetContentList;
