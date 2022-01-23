@@ -316,5 +316,23 @@ rules:
 
 ## 五、利用sharding-sphere-ui 可以动态的修改配置
 
-（待补充）
+下载地址：https://archive.apache.org/dist/shardingsphere/
 
+需要在shardingsphere-proxy中将zookeeper打开：
+
+```
+mode:
+  type: Cluster
+  repository:
+    type: ZooKeeper
+    props:
+      namespace: governance_ds
+      server-lists: 127.0.0.1:2181
+      retryIntervalMilliseconds: 500
+      timeToLiveSeconds: 60
+      maxRetries: 3
+      operationTimeoutMilliseconds: 500
+  overwrite: true
+```
+
+启动
