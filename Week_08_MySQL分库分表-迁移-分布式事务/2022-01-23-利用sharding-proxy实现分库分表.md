@@ -154,6 +154,8 @@ rules:
 
 测试：
 
+上面的配置中，为id配置了雪花算法，插入的时候，如果不写id值，系统会用雪花算法生成一个很大的值。
+
 ```
 lifeideMacBook-Pro:shardingsphere-proxy lifei$ mysql -h127.0.0.1 -P3308 -uroot -p
 Enter password:
@@ -230,4 +232,89 @@ mysql> select * from sharding_db.t_order;
 [INFO ] 2022-01-23 11:48:15.804 [ShardingSphere-Command-3] ShardingSphere-SQL - Actual SQL: ds_shop_2 ::: select * from t_order_2 ORDER BY o_id ASC
 [INFO ] 2022-01-23 11:48:15.804 [ShardingSphere-Command-3] ShardingSphere-SQL - Actual SQL: ds_shop_2 ::: select * from t_order_3 ORDER BY o_id ASC
 ```
+
+## 四、将用户表拆成2个库，每个库16张表
+
+### 4.1  表结构
+
+可以先不建立表结构，配置好shardingsphere-prox的配置，通过代理连接mysql，再执行一次这个建表语句，代理mysql会自动帮我们在两个库上分别建立16张表。
+
+```
+CREATE TABLE `t_user` (
+  `u_id`         bigint(20)   NOT NULL PRIMARY KEY AUTO_INCREMENT  COMMENT '主键，自增',
+  `username`     varchar(255) NOT NULL COMMENT '用户名',
+  `phone_number` char(11)     NOT NULL COMMENT '电话号码',
+  `address`      varchar(255) NOT NULL COMMENT '地址',
+  `create_time`  datetime     NOT NULL COMMENT '创建时间',
+  `update_time`  datetime     NOT NULL COMMENT '更新时间'
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
+```
+
+### 4.2 sharding-sphere-prox的配置：
+
+```yaml
+schemaName: sharding_user_db
+
+dataSources:
+  ds_shop_1:
+    url: jdbc:mysql://127.0.0.1:3307/ds_shop_1?useUnicode=true&characterEncoding=utf8&useSSL=false
+    username: shoper
+    password: shoper^pw
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+  ds_shop_2:
+    url: jdbc:mysql://127.0.0.1:3307/ds_shop_2?useUnicode=true&characterEncoding=utf8&useSSL=false
+    username: shoper
+    password: shoper^pw
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+
+rules:
+- !SHARDING
+  tables:
+    t_user:
+      actualDataNodes: ds_shop_${1..2}.t_user_${1..16}
+      tableStrategy:
+        standard:
+          shardingColumn: u_id
+          shardingAlgorithmName: t_user_inline
+      keyGenerateStrategy:
+        column: u_id
+        keyGeneratorName: snowflake
+  bindingTables:
+    - t_user
+  defaultDatabaseStrategy:
+    standard:
+      shardingColumn: u_id
+      shardingAlgorithmName: database_inline
+  defaultTableStrategy:
+    none:
+
+  shardingAlgorithms:
+    database_inline:
+      type: INLINE
+      props:
+        algorithm-expression: ds_shop_${u_id % 2 + 1}
+    t_user_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_user_${u_id % 16 + 1}
+        allow-range-query-with-inline-sharding: true
+
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE
+      props:
+        worker-id: 123
+```
+
+## 五、利用sharding-sphere-ui 可以动态的修改配置
+
+（待补充）
 
