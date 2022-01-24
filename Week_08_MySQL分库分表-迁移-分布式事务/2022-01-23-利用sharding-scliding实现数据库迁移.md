@@ -93,6 +93,8 @@ CREATE TABLE ds_shop.`t_user` (
 
 GRANT ALL ON ds_shop.* TO 'performance'@'%';
 flush privileges;
+
+GRANT REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO 'shoper'@'%';
 ```
 
 ### 1.3  启动shardingsphere-scaling-bin
@@ -138,6 +140,48 @@ curl -X GET http://127.0.0.1:8888/scaling/job/list
 
 ```
 bash 
+```
+
+### 1.6 报了下面的错误
+
+报了错，暂时不知道如何解决。
+
+```
+[ERROR] 21:47:33.964 [nioEventLoopGroup-3-2] o.a.s.scaling.web.HttpServerHandler - Http request handle occur error:
+java.lang.NullPointerException: null
+	at org.apache.shardingsphere.scaling.core.utils.SyncConfigurationUtil.createDumperConfiguration(SyncConfigurationUtil.java:174)
+	at org.apache.shardingsphere.scaling.core.utils.SyncConfigurationUtil.toSyncConfigurations(SyncConfigurationUtil.java:74)
+	at org.apache.shardingsphere.scaling.web.HttpServerHandler.startJob(HttpServerHandler.java:98)
+	at org.apache.shardingsphere.scaling.web.HttpServerHandler.channelRead0(HttpServerHandler.java:73)
+	at org.apache.shardingsphere.scaling.web.HttpServerHandler.channelRead0(HttpServerHandler.java:52)
+	at io.netty.channel.SimpleChannelInboundHandler.channelRead(SimpleChannelInboundHandler.java:99)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:377)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:355)
+	at io.netty.handler.codec.MessageToMessageDecoder.channelRead(MessageToMessageDecoder.java:102)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:377)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:355)
+	at io.netty.channel.CombinedChannelDuplexHandler$DelegatingChannelHandlerContext.fireChannelRead(CombinedChannelDuplexHandler.java:436)
+	at io.netty.handler.codec.ByteToMessageDecoder.fireChannelRead(ByteToMessageDecoder.java:321)
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:295)
+	at io.netty.channel.CombinedChannelDuplexHandler.channelRead(CombinedChannelDuplexHandler.java:251)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:377)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:355)
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1410)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:377)
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:363)
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:919)
+	at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:163)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:714)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:650)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:576)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:493)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:989)
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.lang.Thread.run(Thread.java:748)
 ```
 
 
