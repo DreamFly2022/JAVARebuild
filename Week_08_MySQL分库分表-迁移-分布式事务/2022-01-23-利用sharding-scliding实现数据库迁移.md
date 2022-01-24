@@ -134,12 +134,12 @@ curl -X GET http://127.0.0.1:8888/scaling/job/list
 
 ### 1.4 编写同步数据的配置文件
 
-[scaling.txt]()
+[scaling.txt](https://github.com/hefrankeleyn/JAVARebuild/blob/main/Week_08_MySQL%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8-%E8%BF%81%E7%A7%BB-%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/scaling.txt)
 
 ### 1.5 执行复制命令
 
-```
-bash 
+```bash
+bash scaling.txt
 ```
 
 ### 1.6 报了下面的错误
