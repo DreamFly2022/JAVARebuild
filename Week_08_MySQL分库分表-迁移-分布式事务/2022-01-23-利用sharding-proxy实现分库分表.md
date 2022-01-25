@@ -336,3 +336,7 @@ mode:
 ```
 
 启动
+
+## 六、注意
+
+sharding-sphere-proxy，对复杂SQL支持不友好。
