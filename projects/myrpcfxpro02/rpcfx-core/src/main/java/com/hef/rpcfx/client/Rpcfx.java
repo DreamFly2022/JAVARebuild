@@ -85,11 +85,6 @@ public class Rpcfx {
             String respJson = client.newCall(request).execute().body().string();
             System.out.println("respJson: " + respJson);
             return JSON.parseObject(respJson, RpcfxResponse.class);
-            /*
-  request json: {"className":"com.hef.rpcfx.api.UserService","method":"findUser","params":[1]}
-response json: {"result":"{\"@type\":\"com.hef.rpcfx.api.User\",\"id\":1,\"name\":\"Frankeleyn\"}","status":true,"exception":null}
-find user id=1 from server: Frankeleyn
-             */
         }
     }
 }
