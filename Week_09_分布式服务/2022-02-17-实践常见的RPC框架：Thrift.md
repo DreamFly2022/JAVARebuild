@@ -71,7 +71,7 @@ User、UserService、Order、OrderService 四个java文件都是通过Thirft命�
 #### (2) demo-thrift-server 服务端代码
 
 - UserServiceImpl 和 OrderServiceImpl是服务接口的具体实现
-- [DemoThriftServerApplication]()  注册服务：
+- [DemoThriftServerApplication](https://github.com/hefrankeleyn/JAVARebuild/blob/main/projects/action-rpcfx-demo/demo-thrift-server/src/main/java/com/hef/demo/thrift/server/DemoThriftServerApplication.java)  注册服务：
 
 ```java
     public static void main(String[] args) {
@@ -102,7 +102,7 @@ User、UserService、Order、OrderService 四个java文件都是通过Thirft命�
 
 #### (3) demo-thrift-client  客户端代码
 
-- DemoThriftClientApplication 调用服务
+- [DemoThriftClientApplication](https://github.com/hefrankeleyn/JAVARebuild/blob/main/projects/action-rpcfx-demo/demo-thrift-client/src/main/java/com/hef/demo/thrift/client/DemoThriftClientApplication.java) 调用服务
 
 ```java
     public static void main(String[] args) {
