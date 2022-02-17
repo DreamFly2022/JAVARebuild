@@ -17,6 +17,9 @@
         <module>demo-api</module>
         <module>demo-hessian-server</module>
         <module>demo-hessian-client</module>
+        <module>demo-thrift-api</module>
+        <module>demo-thrift-server</module>
+        <module>demo-thrift-client</module>
     </modules>
 
     <properties>
