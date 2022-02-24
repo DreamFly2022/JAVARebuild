@@ -1,0 +1,22 @@
+syntax = "proto3";
+/*
+执行命令:可以在任意路径下执行
+protoc -I=/Users/lifei/Documents/workspace/githubRepositoies/JAVARebuild/Week_09_分布式服务/protofiles \
+--java_out=/Users/lifei/Documents/workspace/githubRepositoies/JAVARebuild/Week_09_分布式服务/protofiles \
+test_user.proto
+
+*/
+
+// 定义包名
+option java_package="com.hef.proto.demo";
+// 定义要创建的类名
+option java_outer_classname="SearchRequestDemo";
+
+message SearchRequest {
+    string query = 1;
+    int32 page_number = 2;
+    int32 result_per_page = 3;
+}
+
+
+
