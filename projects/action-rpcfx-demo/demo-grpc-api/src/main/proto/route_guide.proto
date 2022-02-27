@@ -31,7 +31,7 @@ service RouteGuide {
   // 例如：服务端能够等到接受完所有的消息之前写入消息，也可以轮流的读取一个消息然后写入一个消息。
   // 消息的顺序被保存在每个流中
   // 通过在请求参数类型和返回参数类型前放置stream关键词：
-  rpc RouteNode(stream RouteNote) returns (stream RouteNote) {}
+  rpc RouteChat(stream RouteNote) returns (stream RouteNote) {}
 
 
 }
@@ -64,6 +64,7 @@ message RouteNote {
 }
 
 // 在RPC中未使用。相反，这个是序列化到磁盘的格式
-message FeatureDatasource {
+// 本案例中：读取带有Feature列表的JSON文件数据，创建出Feature数据列表
+message FeatureDatabase {
   repeated Feature feature = 1;
 }

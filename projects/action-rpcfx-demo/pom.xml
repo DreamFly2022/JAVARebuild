@@ -21,6 +21,7 @@
         <module>demo-thrift-server</module>
         <module>demo-thrift-client</module>
         <module>demo-grpc-api</module>
+        <module>demo-grpc-server</module>
     </modules>
 
     <properties>
