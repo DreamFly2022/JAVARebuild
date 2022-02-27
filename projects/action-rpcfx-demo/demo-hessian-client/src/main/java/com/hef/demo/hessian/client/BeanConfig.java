@@ -1,11 +1,10 @@
 package com.hef.demo.hessian.client;
 
 import com.caucho.hessian.client.HessianProxyFactory;
-import com.hef.demo.api.OrderService;
-import com.hef.demo.api.UserService;
+import com.hef.demo.hessian.api.OrderService;
+import com.hef.demo.hessian.api.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.remoting.caucho.HessianProxyFactoryBean;
 
 import java.net.MalformedURLException;
 

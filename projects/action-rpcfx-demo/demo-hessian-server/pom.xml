@@ -20,7 +20,7 @@
     <dependencies>
         <dependency>
             <groupId>com.hef</groupId>
-            <artifactId>demo-api</artifactId>
+            <artifactId>demo-hessian-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -1,4 +1,4 @@
-package com.hef.demo.api;
+package com.hef.demo.hessian.api;
 
 import java.io.Serializable;
 

@@ -1,9 +1,9 @@
 package com.hef.demo.hessian.client;
 
-import com.hef.demo.api.Order;
-import com.hef.demo.api.OrderService;
-import com.hef.demo.api.User;
-import com.hef.demo.api.UserService;
+import com.hef.demo.hessian.api.Order;
+import com.hef.demo.hessian.api.OrderService;
+import com.hef.demo.hessian.api.User;
+import com.hef.demo.hessian.api.UserService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RequestMapping;

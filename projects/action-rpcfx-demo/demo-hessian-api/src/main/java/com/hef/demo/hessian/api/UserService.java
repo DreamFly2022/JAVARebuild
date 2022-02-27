@@ -1,4 +1,4 @@
-package com.hef.demo.api;
+package com.hef.demo.hessian.api;
 
 public interface UserService {
 

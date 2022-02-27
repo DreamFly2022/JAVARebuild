@@ -1,7 +1,7 @@
 package com.hef.demo.hessian.server;
 
-import com.hef.demo.api.Order;
-import com.hef.demo.api.OrderService;
+import com.hef.demo.hessian.api.Order;
+import com.hef.demo.hessian.api.OrderService;
 
 /**
  * @Date 2022/2/16
