@@ -128,7 +128,7 @@ public class RouteGuideClient {
      * @param features
      * @param numPoints
      */
-    public void recordRoute(List<Feature> features, int numPoints) {
+    public void recordRoute(List<Feature> features, int numPoints) throws InterruptedException {
         info("*** RecordRoute");
         final CountDownLatch finishLatch = new CountDownLatch(1);
         StreamObserver<RouteSummary> responseObserver = new StreamObserver<RouteSummary>() {
@@ -159,7 +159,23 @@ public class RouteGuideClient {
             for (int i = 0; i < numPoints; i++) {
                 int index = random.nextInt(features.size());
                 Point point = features.get(index).getLocation();
-                info("正在旅行");
+                info("正在参观：{0}, {1}", RouteGuideUtil.getLatitude(point),
+                        RouteGuideUtil.getLongitude(point));
+                requestObserver.onNext(point);
+                // 在发送下一个之前睡一会儿
+                Thread.sleep(random.nextInt(1000) + 500);
+                if (finishLatch.getCount()==0) {
+                    // 在我们完成发送之前，RPC调用完成或者发生错误
+                    // 发送更多的请求不会出现错误，但是它们会被抛弃
+                    return;
+                }
+            }
+            // 标记请求完成
+            requestObserver.onCompleted();
+
+            // 接受异步的请求
+            if (!finishLatch.await(1, TimeUnit.MINUTES)) {
+                warning("recordRoute 在1分钟之内没有完成。");
             }
         }catch (RuntimeException e) {
             requestObserver.onError(e);
@@ -167,6 +183,71 @@ public class RouteGuideClient {
         }
     }
 
+    /**
+     * 双向流RPC方法的调用
+     * @return
+     */
+    public CountDownLatch routeChat() {
+        info("*** RouteChar");
+        final CountDownLatch finishLatch = new CountDownLatch(1);
+        StreamObserver<RouteNote> responseObserver = new StreamObserver<RouteNote>() {
+            @Override
+            public void onNext(RouteNote routeNote) {
+                info("在{0} {1} 得到信息 \"{2}\"",
+                        routeNote.getLocation().getLatitude(),
+                        routeNote.getLocation().getLongitude(),
+                        routeNote.getMessage()
+                        );
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                warning("routeChat发生错误：{0}", Status.fromThrowable(throwable));
+                finishLatch.countDown();
+            }
+
+            @Override
+            public void onCompleted() {
+                info("完成了routeChat 调用");
+                finishLatch.countDown();
+            }
+        };
+        StreamObserver<RouteNote> requestObserver = asyncStub.routeChat(responseObserver);
+        try {
+            RouteNote[] requests = {
+                    newNote("第一个消息", 0, 0),
+                    newNote("第二个消息", 0, 10_000_000),
+                    newNote("第三个消息", 10_000_000, 0),
+                    newNote("第四个消息", 10_000_000, 10_000_000)
+            };
+            for (RouteNote request : requests) {
+                info("在{0}, {1}上 发送消息 \"{2}\"",
+                        request.getLocation().getLatitude(),
+                        request.getLocation().getLongitude(),
+                        request.getMessage());
+                requestObserver.onNext(request);
+            }
+        }catch (StatusRuntimeException e) {
+            // 取消RPC
+            requestObserver.onError(e);
+        }
+        // 标记所有的请求完成
+        requestObserver.onCompleted();
+        // 在异步接受的过程中，返回finishLatch
+        return finishLatch;
+    }
+
+    private RouteNote newNote(String message, int lat, int lon) {
+        return RouteNote.newBuilder().setMessage(message)
+                .setLocation(Point.newBuilder().setLatitude(lat).setLongitude(lon).build())
+                .build();
+    }
+
+    /**
+     * 客户端运行入口
+     * @param args
+     * @throws InterruptedException
+     */
     public static void main(String[] args) throws InterruptedException {
         String host = "localhost";
         int port = 8980;
@@ -179,6 +260,16 @@ public class RouteGuideClient {
             client.getFeature(409146138, -746188906);
             // 调用服务端流形式的RPC方法
             client.listFeatures(400000000, -750000000, 420000000, -730000000);
+            // 调用客户端流形式的RPC方法
+            List<Feature> features = RouteGuideUtil.parseFeatures(RouteGuideUtil.getDefaultFeaturesFile());
+            // 从features列表中记录一些随机选择的点
+            client.recordRoute(features, 10);
+
+            // 调用双向流RPC方法： 发送并返回一些notes
+            CountDownLatch finishLatch = client.routeChat();
+            if (!finishLatch.await(1, TimeUnit.MINUTES)) {
+                client.warning("routeChat 在一分钟之内 没有完成");
+            }
         }finally {
             channel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
         }
