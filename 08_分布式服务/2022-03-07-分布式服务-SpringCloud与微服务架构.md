@@ -560,3 +560,153 @@ Hystrix/Alibaba Sentinel
 - 尝试画微服务的：技术架构图、业务架构图
 
 ![组件的选择](./photos/033组件的选择.png)
+
+## 六、微服务相关框架与工具
+
+### 6.1 云原生里可观测性的三大块内容
+
+云原生里可观测性里面有三大块内容：日志（Logging）、跟踪（Tracing）、指标度量（Metries）。
+
+APM属于跟踪（Tracing）这一块的内容。
+
+- Logging， ELK用的最多（没有那么多分叉），没有那么多分叉
+
+- Tracing，有两个标准。
+
+  标准一：OpenTracing，只做trace，是CNCF社区搞得。
+
+  标准二：OpenCensus，谷歌、微软定义的标准。不仅有Trace，还有metrics。设计的更合理
+
+  后来，经过发展，出来了一个OpenTelemetry，将OpenTracing和OpenCensus整合到一块。
+
+  OpenTelemetry里面有了可观测性的所有东西。
+
+### 6.2 相关工具：APM（应用性能监控）
+
+APM：应用性能监控
+
+- Apache Skywalking
+- Pinpoint
+- Zipkin
+- Jaeger
+
+#### （1）我们一般称APM为全链路跟踪。为什么？
+
+云原生里可观测性里面有三大块内容：日志（Logging）、跟踪（Tracing）、指标度量（Metries）。
+
+APM属于跟踪（Tracing）这一块的内容。
+
+#### （2）如何跟踪？
+
+一个请求进入系统，走一个很长的调用链（不断调用方法），然后出来，如果我们像AOP一样，从方法的调用开始和调用结束这两个口上各打一个时间戳，这两个时间戳减一下，我们就知道了这个方法调用执行的时间。
+
+基于这个原理，APM软件就做了这样的设计，每次从头到尾的调用过程，我们叫它为一次跟踪。用一个全局的traceID来聚合它们。
+
+- 对于里面每一个方法的进入和出来（返回）这两个点，这两个点组成的这样一个小的步骤叫span。
+- 整个调用流程（到返回），用一个traceID表示；
+
+一次调用链（可能会调用多个方法）用一个traceID表示，一个方法（从这个方法进入到出来）调用称为一个span。这样APM就能通过调用链（traceID）和调用链上的点（span）来还原整个调用过程。
+
+#### （3）怎么干？
+
+利用字节码增强（Java Agent）的方式：在系统启动的时候，要通过一个Java Agent。Java Agent上写好了我们要通过哪几个包和哪几个类。把那些包和类全部通过字节码增强，然后注入打点跟踪的代码。
+
+背后打点的数据，需要通过多线程的异步，也会通过类似kafka消息队列，将日志收集到我们的存储设备里（比如：放入ES）。
+
+### 6.3 相关工具：监控
+
+监控：
+
+- ELK  （用得最多）： Elasticsearch（收集日志）、Logstash（查询分析） 和 Kibana（展示）
+
+- promethus + Grafana：promethus里面内置了一个类似时序数据库的东西（像那些打点的数据都是根据时间点来的）
+
+  将时序数据打入promethus里，再用Grafana来做可视化的展示面板。
+
+类似的时序数据库有：InfluxDB和openTSDB
+
+> TS: Time series
+
+### 6.4 相关工具：权限控制
+
+权限控制最核心的东西3A（其它：资源管理，安全加密等）：
+
+- Authc：Authentication   认证，看有没有权限
+- Authz：Authorization     授权，赋予权限
+- Audit（审计上的东西）
+
+前两个是功能，后一个是审计。
+
+#### （1）常规的：CAS+SSO（TGT、ST）
+
+CAS：统一认证中心。
+
+我们的系统多了，不可能每一个系统都设置一套用户管理系统的东西。所以我们常规的软件都可以支持集成CAS。统一的去一个集中的地方获取用户信息、用户权限信息、权限认证信息，这被称为CAS。
+
+SSO单点登录系统。
+
+有了统一认证中心之后，我们就可以做单点登录，比如整个公司有50套系统，这50套系统的用户都是由一套系统（CAS，统一认证中心）来管。那么就可以做一套SSO（单点登录系统），用单点登录，大家统一去CAS上认证来做登录（验证有没有这个用户，用户名和密码对比对）。如果权限也是由CAS管的，不同用户访问一个网页，还是访问一个资源，可以去CAS上拿有没有这个权限（或者第一次登录完了，就把权限传给SSO）
+
+TGT：用户授权的Token。我们一般称前面一个Token叫“用户授权的Token”。
+
+ST：Service Token， 验证用户有没有权限。
+
+#### （2）Java中：JWT/Token，OAuth2.0
+
+在JAVA中，我们可以通过JWT、Token或OAuth2.0来做跨系统的认证，权限处理。
+
+#### （3）系统内部：SpringSecurity、Apache Shiro
+
+在系统内部我们管理，我们管理用户的安全和权限这块：SpringSecurity、Apache Shiro。
+
+特别推荐用：Apache Shiro。
+
+实践：建议自己实现一个SSO。
+
+### 6.5 相关工具：数据处理
+
+1. 读写分离与高可用HA；
+2. 分库分表Sharding；
+3. 分布式事务DTX；
+4. 数据迁移Migration；
+5. 数据集群扩容Scaling；
+6. 数据操作审计Audit；
+
+数据操作审计Audit：涉及到数据治理。在大公司对数据管理非常严格。在金融机构，数据更要从严管理。对数据的任何操作、查看、使用，都是需要严格的流程和审计、留痕。
+
+### 6.6 相关工具：网关和通信
+
+#### （1）流量网关与WAF(Nginx/[OpenResty](https://openresty.org/cn/)/Kong/Apisix)
+
+> WAF：Web Application Firewall 
+
+流量网关基本都基于Nginx。
+
+OpenResty 是在Nginx基础之上，加了Lua引擎，这样可以用Lua脚本操作Nginx。
+
+Kong是在OpenResy基础上做到。
+
+Apisix是Apache的项目，是一个类似于Kong的东西。
+
+#### （2）业务网关：Zuul/Zuul2/Spring Cloud Getway/shenyu
+
+#### （3）REST与 其他协议之争（websocket、actor、rsocket、mq...）
+
+整个微服务体系对Web端或移动端通过API提供接口，这个没问题的。
+
+但是在内部相互调用的时候，我们走REST、JSON、HTTP，一般性能和效率不是最好的，有时候我们需要往页面上轮询或需要有一个持续的状态，比如K线图，每分钟刷新，我们用轮询的方式，有时候并不合适。而在http基础上，升级到webSocket协议（借用HTTP底层的通道，实际上走的是http+二进制协议）效率是最高的，实时性也是最好的。
+
+所以很多时候，我们可以对外提供微服务的接口有两种形态：一种是RESTAPI（让大家不停的调用，每次调用的时候加一个token），另外一种方式是WebSocket。
+
+跨进程的actor
+
+阿里推荐的（Spring也在推荐）：rsocket，底层可以切TCP、UDP等，这样它的性能、延迟特别低。
+
+MQ：如果不着急，可以先放到MQ中，异步处理，让内部线程更高效。
+
+### 6.7 问答
+
+- 全链路监控怎么覆盖到客户端
+
+  波测
+
