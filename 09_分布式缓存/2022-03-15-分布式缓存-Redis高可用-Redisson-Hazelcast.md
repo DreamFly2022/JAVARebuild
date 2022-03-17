@@ -259,7 +259,7 @@ OK
 
   高可用走的是哨兵
 
-### 2.2 Redis Sentinel 主从切换：走向高可用
+### 2.2 Redis Sentinel 主从切换：走向高可用（相当于：MySQL的MHA）
 
 我们怎么才能让主宕掉掉时候，让从变成主。
 
@@ -937,4 +937,454 @@ master0:name=mymaster,status=ok,address=127.0.0.1:6380,slaves=1,sentinels=2
    40) "1"
 127.0.0.1:26379>
 ```
+
+### 2.3 Redis Cluster ：走向分片（相当于分布式数据库，或全自动分库分表）
+
+#### （1）分片的原理
+
+主从复制从容量角度来说，还是单机。
+
+> Redis Cluster通过一致性hash的方式，将数据分散到多个服务器节点：先设计 16384 个哈希槽，分配到多台redis-server。当需要在 Redis Cluster中存取一个 key时， Redis 客户端先对 key 使用 crc16 算法计算一个数值，然后对 16384 取模，这样每个 key 都会对应一个编号在 0-16383 之间的哈希槽，然后在 此槽对应的节点上操作。
+
+假如我有三台Redis server，然后呢，我就可以让三台Redis server 各承担一部分的数据。
+
+默认的话，它把所有的数据能存放的区域分成了16k（1024*16=16384）个slot（槽），这么多槽，可以把这么多的槽分成三大份，让后让每个Redis server 节点，负责其中的一份数据（或一段数据，这一段差不多有三分之一的槽）。这样的话，我们所有的数据在往里写之前，会先做一个crc16的算法（相当于一个哈希的摘要），拿到这个摘要后对16384取模，取完模，取完模之后，有一个数，根据这个数和我们前面分的段，就可以知道我们这个数据往哪个Redis server上写（或者读）。
+
+> 跟我们前面讲的分库分表其实是一摸一样的。
+
+这样的话，这种分片的模式，就可以随着我们增加机器（增加更多的机器），然后让我们的数据尽量的分散。每个机器只有一部分的数据。就会让我们整个集群的容量变大。
+
+- 节点与节点之间，可以通过gossip协议通信。要求我们的集群规模小于1000台机器。
+
+  > 常用的分布式下的通信协议。
+
+  也就是说你连到一个Redis server上，找它要数据，如果数据不在它范围内，它会给你发一条指令，让你自己去另外一台server拿数据。相当于重定向。
+
+  另外，要求我们的集群规模小于1000台机器。多了就会产生很多副作用，各种同步、心跳的数据量太大，操作时有可能会产生网络风暴。
+
+- 默认所有槽位可用，才提供服务
+
+  默认情况下，Redis Cluster要求我们所有的（16384个）槽位，都是正常的，才能提供服务；如果机器宕了，就不提供服务了。
+
+  这个参数可以改，改了就会有别的问题。
+
+  因为redis Cluster这种分片的路由是在客户端做的。在客户端做就意味着，服务端停了，它不知道。
+
+  > 假如不设置一个严格的大家都检查一致了，都能提供服务了再启动，可能我们操作数据的时候，有一部分数据由于部分服务的停机导致没有写进去。
+
+- 做有些范围数据到相关操作，可能就会出问题
+
+  （同时，使用上还有一些限制）分片以后，数据到不同机器上，做有些范围数据到相关操作，可能就会出问题，因为不再一台机器上。
+
+- 一般会配置主从模式使用
+
+  另外，我们一般可以把Redis Cluster这种分片的设计和我们主从的设计联合起来使用。
+
+  这套server全部是主，再给每个分片后的server配置上一个或几个从节点。在用Sentinel之类的做高可用。
+
+  前面的sentinel配置中，可以配置多个下面这样的片段，也就是说一个sentinel（哨兵）可以监视多个（一堆）Redis server的主库：
+
+  ```
+  sentinel monitor mymaster 127.0.0.1 6379 2
+  sentinel down-after-milliseconds mymaster 60000
+  sentinel failover-timeout mymaster 180000
+  sentinel parallel-syncs mymaster 1
+  ```
+
+这样就可以通过哨兵，在我们每个分片的服务器宕了的时候，把它对应的从库，拉起来变成一个从库。保证我们既有分片，又有主从，又有高可用。这样合起来就是一个分布式的内存数据库。
+
+> 跟我们前面讲的MySQL整体基本是一摸一样的。
+
+#### （2）参考
+
+redis cluster介绍：http://redisdoc.com/topic/cluster-spec.html
+
+redis cluster原理：https://www.cnblogs.com/williamjie/p/11132211.html
+
+redis cluster详细配置：https://www.cnblogs.com/renpingsheng/p/9813959.html
+
+#### （3）问答
+
+- Sentinel 挂了怎么办
+
+  sentinel配置多个，半数能提供服务即可。
+
+- Redis还有些特殊的功能
+
+  比如 1主5从，可以配置只有2个以上从库可用（active），主库才可以写。
+
+- 分片的使用场景是什么
+
+  容量
+
+- 脑裂是什么意思
+
+  （脑裂是两个主）假如我们有5台，本来是1主4从，然后现在突然网络分生了分区（也就是CAP中的P），导致3个一组（A组）是通的，那2个一组（B组）是通的。A组选择A1作为它们的主，B组选择B2成两个它们的主。**各自玩各自的了，这叫脑裂。**
+
+  1主4从的Redis，我们可以配置，从库少于2个多时候，主库不能写。就是为了预防Redis脑裂。
+
+  > 如果发生脑裂 1-2从，和1-1从。1-1多不能写入
+
+- 客户端怎么感知Redis中哪个是主库，难道客户端每次写操作都要判断当前主库是不是可写的
+
+  jedis对sentinel的支持里，封装了。
+
+  > 演示代码里有
+
+- cluster为什么要分那么槽
+
+  为了支持大规模的集群，做到一致性的hash。
+
+  > https://github.com/redis/redis/issues/2576
+
+- Sentinel 在redis集群中相当于什么
+
+  相当于注册中心。也就是说，我们如果连接到一个sentinel就可以获取到master到状态信息。再通过连接master就可以获取slave信息。
+
+### 2.4 （代码演示&作业）Java中配置使用Redis Sentinel *
+
+#### （1）环境准备
+
+> 今天是2022年3月17日 21:53
+
+将环境切换为正常的主备：
+
+```
+localhost:redis-6.2.6 lifei$ src/redis-server ./redis6379.conf 1>log6379.log 2>&1 &
+[1] 16616
+localhost:redis-6.2.6 lifei$ src/redis-server ./redis6380.conf 1>log6380.log 2>&1 &
+[2] 16713
+localhost:redis-6.2.6 lifei$ src/redis-cli -h 127.0.0.1 -p 6379
+127.0.0.1:6379> info Replication
+# Replication
+role:slave
+master_host:127.0.0.1
+master_port:6380
+master_link_status:up
+master_last_io_seconds_ago:10
+master_sync_in_progress:0
+slave_read_repl_offset:42
+slave_repl_offset:42
+slave_priority:100
+slave_read_only:1
+replica_announced:1
+connected_slaves:0
+master_failover_state:no-failover
+master_replid:93edc88a9b75bb05193733b5271408c5fdf7e463
+master_replid2:0000000000000000000000000000000000000000
+master_repl_offset:42
+second_repl_offset:-1
+repl_backlog_active:1
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:1
+repl_backlog_histlen:42
+127.0.0.1:6379> slaveof no one
+OK
+127.0.0.1:6379> info Replication
+# Replication
+role:master
+connected_slaves:0
+master_failover_state:no-failover
+master_replid:d8c396dde28dc2b6806b7a39a02538537e936a98
+master_replid2:93edc88a9b75bb05193733b5271408c5fdf7e463
+master_repl_offset:308
+second_repl_offset:309
+repl_backlog_active:1
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:1
+repl_backlog_histlen:308
+127.0.0.1:6379> flushdb
+OK
+127.0.0.1:6379> dbsize
+(integer) 0
+127.0.0.1:6379>
+```
+
+```
+localhost:redis-6.2.6 lifei$ src/redis-cli -h 127.0.0.1 -p 6380
+127.0.0.1:6380> info Replication
+# Replication
+role:master
+connected_slaves:1
+slave0:ip=127.0.0.1,port=6379,state=online,offset=210,lag=1
+master_failover_state:no-failover
+master_replid:93edc88a9b75bb05193733b5271408c5fdf7e463
+master_replid2:0000000000000000000000000000000000000000
+master_repl_offset:210
+second_repl_offset:-1
+repl_backlog_active:1
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:1
+repl_backlog_histlen:210
+127.0.0.1:6380> flushdb
+OK
+127.0.0.1:6380> dbsize
+(integer) 0
+127.0.0.1:6380>
+```
+
+启动两个sentinel：
+
+```
+localhost:redis-6.2.6 lifei$ nohup src/redis-sentinel ./sentinel0.conf 1>logSentinel0.log 2>&1 &
+[1] 17940
+localhost:redis-6.2.6 lifei$ nohup src/redis-sentinel ./sentinel1.conf 1>logSentinel1.log 2>&1 &
+[2] 17965
+```
+
+
+
+```
+localhost:redis-6.2.6 lifei$ src/redis-cli -h 127.0.0.1 -p 26379
+127.0.0.1:26379> info master
+127.0.0.1:26379> info Sentinel
+# Sentinel
+sentinel_masters:1
+sentinel_tilt:0
+sentinel_running_scripts:0
+sentinel_scripts_queue_length:0
+sentinel_simulate_failure_flags:0
+master0:name=mymaster,status=ok,address=127.0.0.1:6380,slaves=1,sentinels=2
+127.0.0.1:26379>
+```
+
+```
+-- 把6380 停掉， 6379自动变成主库
+127.0.0.1:6380> shutdown
+not connected> exit
+localhost:redis-6.2.6 lifei$
+```
+
+再把6380启动起来：
+
+```
+localhost:redis-6.2.6 lifei$ src/redis-server ./redis6380.conf 1>log6380.log 2>&1 &
+[1] 21037
+localhost:redis-6.2.6 lifei$ src/redis-cli -h 127.0.0.1 -p 6380
+127.0.0.1:6380> info Replication
+# Replication
+role:slave
+master_host:127.0.0.1
+master_port:6379
+master_link_status:up
+master_last_io_seconds_ago:1
+master_sync_in_progress:0
+slave_read_repl_offset:120999
+slave_repl_offset:120999
+slave_priority:100
+slave_read_only:1
+replica_announced:1
+connected_slaves:0
+master_failover_state:no-failover
+master_replid:666f48936480361ea0eb6bb72499c1a461e680fd
+master_replid2:0000000000000000000000000000000000000000
+master_repl_offset:120999
+second_repl_offset:-1
+repl_backlog_active:1
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:119353
+repl_backlog_histlen:1647
+127.0.0.1:6380>
+```
+
+
+
+####（2）看代码
+
+##### C1、（最简单）作业要求
+
+使用Jedis进行简单的操作。
+
+```java
+		// C1.最简单demo
+		Jedis jedis = new Jedis("localhost", 6379);
+		System.out.println(jedis.info());
+		jedis.set("uptime", new Long(System.currentTimeMillis()).toString());
+		System.out.println(jedis.get("uptime"));
+		jedis.set("teacher", "Cuijing");
+		System.out.println(jedis.get("teacher"));
+```
+
+##### C2、基于Sentinel和连接池的demo
+
+如果主从发生变化，我们也不用管，Sentinel帮我们处理。
+
+这段代码里，我们没有配置Redis的ip和端口，只配置了两个sentinel。
+
+```java
+		Jedis sjedis = SentinelJedis.getJedis();
+		System.out.println(sjedis.info());
+		sjedis.set("uptime2", new Long(System.currentTimeMillis()).toString());
+		System.out.println(sjedis.get("uptime2"));
+		SentinelJedis.close();
+```
+
+接下来，演示切换，直接把主库停掉：
+
+```shell
+127.0.0.1:6379> get uptime2
+"1647525972873"
+127.0.0.1:6379> shutdown
+not connected> exit
+[1]-  Done                    src/redis-server ./redis6379.conf > log6379.log 2>&1
+```
+
+等10秒钟，6380变成主库了：
+
+```
+127.0.0.1:6380> info Replication
+# Replication
+role:master
+connected_slaves:0
+master_failover_state:no-failover
+master_replid:c0b107a54f0cafe7711aea57c350dea55f86e55a
+master_replid2:666f48936480361ea0eb6bb72499c1a461e680fd
+master_repl_offset:184131
+second_repl_offset:178124
+repl_backlog_active:1
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:119353
+repl_backlog_histlen:64779
+127.0.0.1:6380>
+```
+
+然后把6379重启，10秒后，6379变为从库：
+
+```
+localhost:redis-6.2.6 lifei$ src/redis-cli -h 127.0.0.1 -p 6379
+127.0.0.1:6379> info Replication
+Error: Server closed the connection
+127.0.0.1:6379> info Replication
+# Replication
+role:slave
+master_host:127.0.0.1
+master_port:6380
+master_link_status:up
+master_last_io_seconds_ago:0
+master_sync_in_progress:0
+slave_read_repl_offset:196005
+slave_repl_offset:196005
+slave_priority:100
+slave_read_only:1
+replica_announced:1
+connected_slaves:0
+master_failover_state:no-failover
+master_replid:c0b107a54f0cafe7711aea57c350dea55f86e55a
+master_replid2:0000000000000000000000000000000000000000
+master_repl_offset:196005
+second_repl_offset:-1
+repl_backlog_active:1
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:194506
+repl_backlog_histlen:1500
+127.0.0.1:6379>
+```
+
+继续执行代码，看是否能写成功：
+
+```java
+		Jedis sjedis = SentinelJedis.getJedis();
+		System.out.println(sjedis.info());
+		sjedis.set("uptime1", new Long(System.currentTimeMillis()).toString());
+		System.out.println(sjedis.get("uptime1"));
+		SentinelJedis.close();
+```
+
+可以发现能够写入成功。
+
+```
+127.0.0.1:6379> keys *
+1) "uptime2"
+2) "uptime1"
+3) "uptime"
+4) "teacher"
+127.0.0.1:6379> get uptime1
+"1647526351429"
+127.0.0.1:6379>
+```
+
+##### C3、直接连接Sentinel进行操作（Sentinel也是一个Redis）
+
+`redis-senitnel` 这个命令其实就是基于原先`redis-server`命令，加的软链接。所以可以像连接Redis一样，连接Sentinel。
+
+读取哨兵本身的信息：
+
+```java
+		Jedis jedisSentinel = new Jedis("localhost", 26379); // 连接到sentinel
+		List<Map<String, String>> masters = jedisSentinel.sentinelMasters();
+		System.out.println(JSON.toJSONString(masters));
+		List<Map<String, String>> slaves = jedisSentinel.sentinelSlaves("mymaster");
+		System.out.println(JSON.toJSONString(slaves));
+```
+
+获取master和slave的集合。
+
+```json
+[{"role-reported":"master","info-refresh":"6790","config-epoch":"3","last-ping-sent":"0","role-reported-time":"600048","ip":"127.0.0.1","quorum":"2","flags":"master","parallel-syncs":"1","num-slaves":"1","link-pending-commands":"0","failover-timeout":"180000","port":"6380","num-other-sentinels":"1","name":"mymaster","last-ok-ping-reply":"653","last-ping-reply":"653","runid":"e519f4f3ba42a369d4a6d8455683366cc9a56c6c","link-refcount":"1","down-after-milliseconds":"60000"}]
+[{"role-reported":"slave","info-refresh":"3636","last-ping-sent":"0","role-reported-time":"475444","ip":"127.0.0.1","flags":"slave","slave-repl-offset":"256811","master-port":"6380","replica-announced":"1","link-pending-commands":"0","master-host":"127.0.0.1","slave-priority":"100","port":"6379","name":"127.0.0.1:6379","last-ok-ping-reply":"716","last-ping-reply":"716","runid":"f85982289dd489ecc2046e494509efdf21355c4b","link-refcount":"1","master-link-status":"ok","master-link-down-time":"0","down-after-milliseconds":"60000"}]
+```
+
+也就是说，只要连接上Sentinel，就知道master和slave的信息了。
+
+#### （3）作业
+
+- 作业一：Lettuce 是为了更好做一个Redis客户端的。
+
+- 作业二：在`application.yml` 中配置Redis；
+
+- 作业三：里面有伪代码；
+
+- 作业四：可以做sentinel的操作；
+
+  自己演示，看有啥效果。
+
+- 作业五：自己配置Redis Cluster
+
+  如果配置好，就可以使用`ClusterJedis.java`了。
+
+  这个东西和Jedis的操作基本一样。
+
+  作业五点代码，需要配置好两个Redis的集群才能执行。
+
+  （如果配置三个，需要修改`ClusterJedis.java`文件，添加一个节点配置，比如6381）
+
+  配置集群的步骤是下面写的四步：
+
+```
+		// 作业：
+		// 1. 参考C2，实现基于Lettuce和Redission的Sentinel配置
+		// 2. 实现springboot/spring data redis的sentinel配置
+		// 3. 使用jedis命令，使用java代码手动切换 redis 主从
+		// 	  Jedis jedis1 = new Jedis("localhost", 6379);
+		//    jedis1.info...
+		//    jedis1.set xxx...
+		//	  Jedis jedis2 = new Jedis("localhost", 6380);
+		//    jedis2.slaveof...
+		//    jedis2.get xxx
+		// 4. 使用C3的方式，使用java代码手动操作sentinel
+
+
+		// C4. Redis Cluster
+		// 作业：
+		// 5.使用命令行配置Redis cluster:
+		//  1) 以cluster方式启动redis-server
+		//  2) 用meet（相当于slaveof命令），添加cluster节点，确认集群节点数目
+		//  3) 分配槽位，确认分配成功
+		//  4) 测试简单的get/set是否成功
+		// 然后运行如下代码
+// 		JedisCluster cluster = ClusterJedis.getJedisCluster();
+//		for (int i = 0; i < 100; i++) {
+//			cluster.set("cluster:" + i, "data:" + i);
+//		}
+//		System.out.println(cluster.get("cluster:92"));
+//		ClusterJedis.close();
+
+		//SpringApplication.run(RedisApplication.class, args);
+```
+
+### 2.5 （代码演示&作业）Java中配置使用Redis Cluster *
+
+
+
+ 
 
