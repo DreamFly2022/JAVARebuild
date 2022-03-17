@@ -1384,7 +1384,170 @@ repl_backlog_histlen:1500
 
 ### 2.5 （代码演示&作业）Java中配置使用Redis Cluster *
 
+ ## 三、Redisson介绍
+
+### 3.1 Redisson的出发点
+
+Redisson的出发点和Jedis、Lettuce的出发点完全不一样。
+
+Redisson关注在分布式的应用上。
+
+假如我们已经有了一个Redis的集群了，然后我们怎么来在我们的分布式系统里，用好我们各种的分布式工具。比如，前面讲的各种多线程的包装类。这个东西我们都可以做到在我们当前的JVM内协调我们的并发，保证我们一致性的锁。
+
+假设我们现在部署了三台、五台、十台机器，那么机器与机器之间还是并发的，我们的信号量（countDownLatch）之类的东西是锁不住我们另一台机器上的一些线程的。
+
+我们有什么办法实现一个跨机器的基础设施？
+
+做到跨机器的线程安全。
+
+另外一方面，我们能不能实现一种分布式的数据结构。比如，我们有个map，我们希望这个map是全集群共享的。一个机器改了这个map，其他机器都会同步。
+
+全局锁：能实现跨节点的锁状态。
+
+> 创建一个锁，现在lock了，不管有多少个机器节点的进程run起来了，只要名字和我相同的锁，它现在想lock，就lock不上。
+
+### 3.2 Redis 的Java分布式组件库-Redisson
+
+基于Netty NIO，API线程安全。
+
+亮点：大量丰富的分布式功能特性，比如JUC的线程安全集合和工具的分布式版本，分 布式的基本数据类型和锁等。
+
+官网：https://github.com/redisson/redisson
+
+**Redission会自动续期（锁过期，自动续）**。
+
+Redission把很多东西封装成基于Redis的内容。
+
+### 3.3 代码示例
+
+#### （1）演示分布式的数据结构
+
+`RedissionDemo`和`RedisionDemo1`的区别是：
+
+- RedissionDemo 中多了一个`while`代码块：每两秒打印一下值。
+- RedissionDemo1 , 写的值多了个一个"-"
+- 注意while代码块的位置
+
+```java
+    @SneakyThrows
+    public static void main(String[] args) {
+        Config config = new Config();
+        config.useSingleServer().setAddress("redis://127.0.0.1:6379");
+
+        final RedissonClient client = Redisson.create(config);
+        RMap<String, String> rmap = client.getMap("map1");
+        RLock lock = client.getLock("lock1");
+
+        try{
+            lock.lock();
+
+            for (int i = 0; i < 15; i++) {
+                rmap.put("rkey:"+i, "111rvalue:"+i);
+            }
+
+        }finally{
+            lock.unlock();
+        }
+             // 代码块 W1
+            while(true) {
+                Thread.sleep(2000);
+                System.out.println(rmap.get("rkey:10"));
+            }
 
 
- 
+    }
+```
+
+上面两个类，做到事情有：
+
+基于单个的Redis，创建了一个RedissonClient ，用这个client创建一个分布式的map1，同时创建一个锁lock1。
+
+先运行RedissionDemo。
+
+效果：当map1的值被更新了，不用重新去redis获取这个map1 ，就能获取到最新的值。
+
+#### （2）演示分布式的锁
+
+移动while代码块的位置：
+
+```java
+    @SneakyThrows
+    public static void main(String[] args) {
+        Config config = new Config();
+        config.useSingleServer().setAddress("redis://127.0.0.1:6379");
+        final RedissonClient client = Redisson.create(config);
+        RMap<String, String> rmap = client.getMap("map1");
+        RLock lock = client.getLock("lock1");
+        try{
+            lock.lock();
+            for (int i = 0; i < 15; i++) {
+                rmap.put("rkey:"+i, "111rvalue:"+i);
+            }
+            // 如果代码块 W1 在这里会怎么样？
+            // 代码块 W1
+            while(true) {
+                Thread.sleep(2000);
+                System.out.println(rmap.get("rkey:10"));
+            }
+        }finally{
+            lock.unlock();
+        }
+    }
+```
+
+这个时候，先运行RedissionDemo， 再运行RedissionDemo1，发现RedissionDemo1运行不了。
+
+把RedissionDemo杀掉，等一会儿（锁过期），RedissionDemo1就可以继续运行了。
+
+效果：把两个进程之间，相互卡住。
+
+Redission会自动续期。
+
+## 四、Hazelcast介绍
+
+### 4.1 内存网格 - Hazelcast
+
+Hazelcast可以看作是Redis的加强版，同时把Redis去掉。
+
+Hazelcast使用内存的，跟服务网格类似，可以把所有的内存串起来，形成内存网格。
+
+Hazelcast IMGD(in-memory data grid) 是一个标准的内存网格系统；它具有以下的一 些基本特性：
+
+1. 分布式的：数据按照某种策略尽可能均匀的分布在集群的所有节点上。
+
+2. 高可用：集群的每个节点都是 active 模式，可以提供业务查询和数据修改事务；部 分节点不可用，集群依然可以提供业务服务。
+
+3. 可扩展的：能按照业务需求增加或者减少服务节点。
+
+4. 面向对象的：数据模型是面向对象和非关系型的。在 java 语言应用程序中引入 hazelcast client api是相当简单的。
+
+5. 低延迟：基于内存的，可以使用堆外内存。
+
+文档：https://docs.hazelcast.org/docs/4.1.1/manual/html-single/index.html
+
+### 4.2 部署有两种方式：
+
+方式一（远端缓存）：Client-Server模式
+
+（类似redis方式）远程缓存，应用程序通过客户端连接集群。
+
+![远端缓存](./photos/008远端缓存.png)
+
+方式二（近端缓存）：嵌入模式
+
+直接不使用远程的方式（不用类似部署redis的方式），把内存缓存的这种功能，直接引入Hazelcast库，在应用系统内，用我们应用系统的堆内存（或堆外内存），开辟一块，作为缓存。同时跟远程一样的，把它们串起来作为一个集群。
+
+这种方式下，少了网络的开销。
+
+使用近端缓存的方式做，更简单明了：直接new了一个map在本机，然后大家组成一个集群，集群里其他地方，当拿到这样一个map，同名的map，往里面写数据的时候，这边要使用，这边的map就直接有了。
+
+Hazelcast整个是用Java做的。用的比较多的是近段缓存。
+
+![近端缓存](./photos/009近端缓存.png)
+
+### 4.2 内存网格 - Hazelcast 数据分区
+
+
+
+
 
