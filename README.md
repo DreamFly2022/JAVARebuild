@@ -61,6 +61,8 @@
 ## 九、分布式缓存
 
 - [进阶实战-分布式缓存-Redis（一）](https://github.com/hefrankeleyn/JAVARebuild/blob/main/09_%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/2022-03-14-%E8%BF%9B%E9%98%B6%E5%AE%9E%E6%88%98-%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98-Redis%EF%BC%88%E4%B8%80%EF%BC%89.md)
+- [进阶实战-分布式缓存-Redis高可用（二）](https://github.com/hefrankeleyn/JAVARebuild/blob/main/09_%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/2022-03-17-%E8%BF%9B%E9%98%B6%E5%AE%9E%E6%88%98-%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98-Redis%E9%AB%98%E5%8F%AF%E7%94%A8%EF%BC%88%E4%BA%8C%EF%BC%89.md)
+- [进阶实战-分布式缓存-Redis高可用-Redisson-Hazelcast（三）](https://github.com/hefrankeleyn/JAVARebuild/blob/main/09_%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98/2022-03-18-%E8%BF%9B%E9%98%B6%E5%AE%9E%E6%88%98-%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98-Redis%E9%AB%98%E5%8F%AF%E7%94%A8-Redisson-Hazelcast%EF%BC%88%E4%B8%89%EF%BC%89.md)
 
 ## 十、分布式消息
 
