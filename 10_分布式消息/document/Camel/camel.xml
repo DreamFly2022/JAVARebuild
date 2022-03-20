@@ -1,0 +1,42 @@
+<beans
+  xmlns="http://www.springframework.org/schema/beans" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+    http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+ 
+   <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+       <route>
+           <description>Example Camel Route ~ RabbitMQ Exchange </description>
+           <from uri="activemq:example.A" />
+           <to uri="activemq:example.B" />
+       </route>
+       <!--route>
+           <from uri="rabbitmq:amq.direct?addresses=5672&amp;username=admin&amp;password=admin&amp;exchangeType=topic&amp;autoDelete=false&amp;queue=t"/>
+           <to uri="activemq:example.fromRMQ"/>
+       </route>
+       <route>
+           <from uri="activemq:test" />
+           <to uri="rabbitmq:amq.direct?addresses=5672&amp;username=admin&amp;password=admin&amp;exchangeType=topic&amp;autoDelete=false&amp;queue=test" />
+        </route-->
+        <route>
+           <from uri="rabbitmq://localhost/t?username=admin&amp;password=admin&amp;exchangeType=topic&amp;autoDelete=false&amp;queue=t" />
+           <to uri="activemq:examplefromRMQ" />
+       </route>
+       <!--route>
+           <from uri="activemq:test" />
+           <to uri="rabbitmq://localhost/?username=admin&amp;password=admin&amp;exchangeType=topic&amp;autoDelete=false&amp;queue=testfromAMQ" />
+       </route-->
+   </camelContext>
+ 
+   <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent" >
+       <property name="connectionFactory">
+         <bean class="org.apache.activemq.ActiveMQConnectionFactory">
+           <property name="brokerURL" value="vm://localhost?create=true" />
+           <property name="userName" value="${activemq.username}" />
+           <property name="password" value="${activemq.password}" />
+         </bean>
+       </property>
+   </bean>
+
+</beans>
