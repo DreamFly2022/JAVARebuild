@@ -66,6 +66,8 @@
 
 ## 十、分布式消息
 
+- [进阶实战-消息队列基础]()
+
 - [kafka进阶实战](https://github.com/hefrankeleyn/JAVARebuild/blob/main/10_%E5%88%86%E5%B8%83%E5%BC%8F%E6%B6%88%E6%81%AF/2021-12-24-%E8%BF%9B%E9%98%B6%E5%AE%9E%E6%88%98-kafka.md)
 
 ## 十一、分布式系统架构
